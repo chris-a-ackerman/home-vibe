@@ -1,6 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import AddressInput, { AddressSuggestion } from './AddressInput';
+
+// Mock autocomplete data
+const MOCK_AUTOCOMPLETE_DATA: Record<string, AddressSuggestion[]> = {
+  "1600": [
+    {
+      id: "address.1",
+      text: "1600 Amphitheatre Parkway, Mountain View, CA",
+      latitude: 37.4220,
+      longitude: -122.0841
+    },
+    {
+      id: "address.4",
+      text: "1600 Pennsylvania Avenue NW, Washington, DC",
+      latitude: 38.8977,
+      longitude: -77.0365
+    }
+  ],
+  "350": [
+    {
+      id: "address.2",
+      text: "350 5th Avenue, New York, NY",
+      latitude: 40.7484,
+      longitude: -73.9857
+    },
+    {
+      id: "address.5",
+      text: "350 Mission Street, San Francisco, CA",
+      latitude: 37.7897,
+      longitude: -122.3972
+    }
+  ],
+  "1": [
+    {
+      id: "poi.3",
+      text: "1 Apple Park Way, Cupertino, CA",
+      latitude: 37.3349,
+      longitude: -122.0091
+    }
+  ]
+};
 
 interface AddressEvaluationFormProps {
   onEvaluate?: (address: string) => void;
@@ -11,6 +52,8 @@ interface AddressEvaluationFormProps {
 export default function AddressEvaluationForm({ onEvaluate, disabled = false, disabledMessage }: AddressEvaluationFormProps) {
   const [address, setAddress] = useState('');
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [selectedSuggestion, setSelectedSuggestion] = useState<AddressSuggestion | null>(null);
 
   const handleEvaluate = async () => {
     if (!address.trim()) {
@@ -34,42 +77,73 @@ export default function AddressEvaluationForm({ onEvaluate, disabled = false, di
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && isVerified) {
       handleEvaluate();
     }
   };
 
+  const handleAddressChange = (newAddress: string) => {
+    setAddress(newAddress);
+    // Reset verification when user types
+    setIsVerified(false);
+    setSelectedSuggestion(null);
+  };
+
+  const handleSuggestionSelect = (suggestion: AddressSuggestion) => {
+    setSelectedSuggestion(suggestion);
+    setIsVerified(true);
+  };
+
+  // Get suggestions based on current input
+  const suggestions = useMemo(() => {
+    if (!address || address.length < 1) return [];
+
+    // Find matching suggestions from mock data
+    const searchKey = Object.keys(MOCK_AUTOCOMPLETE_DATA).find(key =>
+      address.toLowerCase().startsWith(key.toLowerCase())
+    );
+
+    return searchKey ? MOCK_AUTOCOMPLETE_DATA[searchKey] : [];
+  }, [address]);
+
   return (
     <div
-      className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] p-8 w-full"
+      className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] pl-[33px] pr-px py-[33px] w-full flex flex-col gap-12"
       data-name="AddressEvaluationForm"
     >
       {/* Heading */}
-      <div className="mb-12">
+      <div className="h-9">
         <h2 className="font-['Inter'] font-normal text-[30px] leading-[36px] text-neutral-950 tracking-[0.3955px]">
           Where are you considering?
         </h2>
       </div>
 
       {/* Input and Button Section */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 w-full pr-[33px]">
         {/* Address Input */}
-        <input
-          type="text"
+        <AddressInput
           value={address}
-          onChange={(e) => setAddress(e.target.value)}
+          onChange={handleAddressChange}
+          onSelect={handleSuggestionSelect}
           onKeyPress={handleKeyPress}
-          placeholder="Enter address"
-          className="bg-[#f3f3f5] border border-transparent rounded-[8px] px-3 h-[50px] w-full font-['Inter'] font-normal text-[14px] tracking-[-0.1504px] text-neutral-950 placeholder:text-[#717182] focus:outline-none focus:border-[rgba(0,0,0,0.2)] transition-colors"
+          placeholder="1600 Amphitheatre Parkway, Mountain View, CA"
           disabled={isEvaluating}
+          verified={isVerified}
+          suggestions={suggestions}
         />
 
         {/* Evaluate Button */}
         <div className="relative group">
           <button
             onClick={handleEvaluate}
-            disabled={isEvaluating || !address.trim() || disabled}
-            className="bg-[#030213] rounded-[8px] h-[40px] w-full font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[-0.1504px] text-white text-center hover:bg-[#1a1a2e] active:bg-[#000000] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            disabled={isEvaluating || !isVerified || disabled}
+            className={`
+              rounded-[8px] h-[40px] w-full font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[-0.1504px] text-center transition-colors
+              ${isVerified && !disabled && !isEvaluating
+                ? 'bg-[#030213] text-white hover:bg-[#1a1a2e] active:bg-[#000000]'
+                : 'bg-[#d1d5dc] text-[#6a7282] cursor-not-allowed'
+              }
+            `}
           >
             {isEvaluating ? 'Evaluating...' : 'Evaluate Location'}
           </button>
