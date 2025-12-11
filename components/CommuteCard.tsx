@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import AddressInput, { AddressSuggestion } from './AddressInput';
 
 interface CommuteLocation {
   id: string;
   address: string;
   maxCommute: string;
   commuteType: string;
+  verified: boolean;
+  suggestion: AddressSuggestion | null;
 }
 
 interface CommuteCardProps {
@@ -17,6 +20,46 @@ interface CommuteCardProps {
 const commuteTimeOptions = ['10', '15', '20', '25', '30', '45', '60', '60+'];
 const commuteTypeOptions = ['Walk', 'Train', 'Bus', 'Car'];
 
+// Mock autocomplete data - same as in AddressEvaluationForm
+const MOCK_AUTOCOMPLETE_DATA: Record<string, AddressSuggestion[]> = {
+  "1600": [
+    {
+      id: "address.1",
+      text: "1600 Amphitheatre Parkway, Mountain View, CA",
+      latitude: 37.4220,
+      longitude: -122.0841
+    },
+    {
+      id: "address.4",
+      text: "1600 Pennsylvania Avenue NW, Washington, DC",
+      latitude: 38.8977,
+      longitude: -77.0365
+    }
+  ],
+  "350": [
+    {
+      id: "address.2",
+      text: "350 5th Avenue, New York, NY",
+      latitude: 40.7484,
+      longitude: -73.9857
+    },
+    {
+      id: "address.5",
+      text: "350 Mission Street, San Francisco, CA",
+      latitude: 37.7897,
+      longitude: -122.3972
+    }
+  ],
+  "1": [
+    {
+      id: "poi.3",
+      text: "1 Apple Park Way, Cupertino, CA",
+      latitude: 37.3349,
+      longitude: -122.0091
+    }
+  ]
+};
+
 export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps) {
   const [locations, setLocations] = useState<CommuteLocation[]>([
     {
@@ -24,15 +67,43 @@ export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps)
       address: '',
       maxCommute: '30',
       commuteType: 'Car',
+      verified: false,
+      suggestion: null,
     },
   ]);
 
-  const updateLocation = (id: string, field: keyof CommuteLocation, value: string) => {
+  const updateLocation = (id: string, field: keyof CommuteLocation, value: any) => {
     const updatedLocations = locations.map((loc) =>
       loc.id === id ? { ...loc, [field]: value } : loc
     );
     setLocations(updatedLocations);
     onValueChange?.(updatedLocations);
+  };
+
+  const handleAddressChange = (id: string, newAddress: string) => {
+    const updatedLocations = locations.map((loc) =>
+      loc.id === id ? { ...loc, address: newAddress, verified: false, suggestion: null } : loc
+    );
+    setLocations(updatedLocations);
+    onValueChange?.(updatedLocations);
+  };
+
+  const handleAddressSelect = (id: string, suggestion: AddressSuggestion) => {
+    const updatedLocations = locations.map((loc) =>
+      loc.id === id ? { ...loc, address: suggestion.text, verified: true, suggestion } : loc
+    );
+    setLocations(updatedLocations);
+    onValueChange?.(updatedLocations);
+  };
+
+  const getSuggestions = (address: string): AddressSuggestion[] => {
+    if (!address || address.length < 1) return [];
+
+    const searchKey = Object.keys(MOCK_AUTOCOMPLETE_DATA).find(key =>
+      address.toLowerCase().startsWith(key.toLowerCase())
+    );
+
+    return searchKey ? MOCK_AUTOCOMPLETE_DATA[searchKey] : [];
   };
 
   const addLocation = () => {
@@ -41,6 +112,8 @@ export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps)
       address: '',
       maxCommute: '30',
       commuteType: 'Car',
+      verified: false,
+      suggestion: null,
     };
     const updatedLocations = [...locations, newLocation];
     setLocations(updatedLocations);
@@ -77,19 +150,22 @@ export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps)
         {locations.map((location, index) => (
           <div key={location.id} className="flex flex-col gap-4">
             {/* Work Address Input with Delete Button */}
-            <div className="flex gap-2 items-center">
-              <input
-                type="text"
-                value={location.address}
-                onChange={(e) => updateLocation(location.id, 'address', e.target.value)}
-                placeholder="Work address"
-                className="flex-1 bg-[#f3f3f5] border border-transparent rounded-[8px] px-3 h-[36px] font-['Inter'] font-normal text-[14px] tracking-[-0.1504px] text-neutral-950 placeholder:text-[#717182] focus:outline-none focus:border-[rgba(0,0,0,0.2)] transition-colors"
-              />
+            <div className="flex gap-2 items-start">
+              <div className="flex-1">
+                <AddressInput
+                  value={location.address}
+                  onChange={(newAddress) => handleAddressChange(location.id, newAddress)}
+                  onSelect={(suggestion) => handleAddressSelect(location.id, suggestion)}
+                  placeholder="Work address"
+                  verified={location.verified}
+                  suggestions={getSuggestions(location.address)}
+                />
+              </div>
               {/* Delete Button - Only show if there's more than one location */}
               {locations.length > 1 && (
                 <button
                   onClick={() => deleteLocation(location.id)}
-                  className="w-[36px] h-[36px] flex items-center justify-center rounded-[8px] hover:bg-gray-100 transition-colors"
+                  className="w-[36px] h-[36px] flex items-center justify-center rounded-[8px] hover:bg-gray-100 transition-colors shrink-0 mt-[7px]"
                   aria-label="Delete location"
                 >
                   <svg
