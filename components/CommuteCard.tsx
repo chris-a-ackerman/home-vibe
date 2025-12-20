@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import AddressInput, { AddressSuggestion } from './AddressInput';
+import { getAddressSuggestions } from '@/lib/addressEvaluationData';
 
 interface CommuteLocation {
   id: string;
@@ -20,46 +21,6 @@ interface CommuteCardProps {
 const commuteTimeOptions = ['10', '15', '20', '25', '30', '45', '60', '60+'];
 const commuteTypeOptions = ['Walk', 'Train', 'Bus', 'Car'];
 
-// Mock autocomplete data - same as in AddressEvaluationForm
-const MOCK_AUTOCOMPLETE_DATA: Record<string, AddressSuggestion[]> = {
-  "1600": [
-    {
-      id: "address.1",
-      text: "1600 Amphitheatre Parkway, Mountain View, CA",
-      latitude: 37.4220,
-      longitude: -122.0841
-    },
-    {
-      id: "address.4",
-      text: "1600 Pennsylvania Avenue NW, Washington, DC",
-      latitude: 38.8977,
-      longitude: -77.0365
-    }
-  ],
-  "350": [
-    {
-      id: "address.2",
-      text: "350 5th Avenue, New York, NY",
-      latitude: 40.7484,
-      longitude: -73.9857
-    },
-    {
-      id: "address.5",
-      text: "350 Mission Street, San Francisco, CA",
-      latitude: 37.7897,
-      longitude: -122.3972
-    }
-  ],
-  "1": [
-    {
-      id: "poi.3",
-      text: "1 Apple Park Way, Cupertino, CA",
-      latitude: 37.3349,
-      longitude: -122.0091
-    }
-  ]
-};
-
 export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps) {
   const [locations, setLocations] = useState<CommuteLocation[]>([
     {
@@ -71,6 +32,9 @@ export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps)
       suggestion: null,
     },
   ]);
+
+  // Store suggestions for each location
+  const [suggestionsByLocation, setSuggestionsByLocation] = useState<Record<string, AddressSuggestion[]>>({});
 
   const updateLocation = (id: string, field: keyof CommuteLocation, value: any) => {
     const updatedLocations = locations.map((loc) =>
@@ -96,15 +60,51 @@ export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps)
     onValueChange?.(updatedLocations);
   };
 
-  const getSuggestions = (address: string): AddressSuggestion[] => {
-    if (!address || address.length < 1) return [];
+  // Fetch suggestions for each location when address changes
+  useEffect(() => {
+    const abortControllers: Record<string, AbortController> = {};
+    const timeouts: Record<string, NodeJS.Timeout> = {};
 
-    const searchKey = Object.keys(MOCK_AUTOCOMPLETE_DATA).find(key =>
-      address.toLowerCase().startsWith(key.toLowerCase())
-    );
+    locations.forEach((location) => {
+      const { id, address } = location;
 
-    return searchKey ? MOCK_AUTOCOMPLETE_DATA[searchKey] : [];
-  };
+      // Cancel previous request for this location
+      const abortController = new AbortController();
+      abortControllers[id] = abortController;
+
+      const fetchSuggestions = async () => {
+        if (!address || address.length < 3) {
+          setSuggestionsByLocation((prev) => ({ ...prev, [id]: [] }));
+          return;
+        }
+
+        const currentAddress = address;
+
+        try {
+          const results = await getAddressSuggestions(address);
+
+          // Only update if address hasn't changed and request wasn't cancelled
+          if (!abortController.signal.aborted && currentAddress === address) {
+            setSuggestionsByLocation((prev) => ({ ...prev, [id]: results }));
+          }
+        } catch (error) {
+          if (!abortController.signal.aborted) {
+            console.error('Error fetching suggestions:', error);
+            setSuggestionsByLocation((prev) => ({ ...prev, [id]: [] }));
+          }
+        }
+      };
+
+      // Debounce API call
+      timeouts[id] = setTimeout(fetchSuggestions, 500);
+    });
+
+    return () => {
+      // Clean up all timeouts and abort controllers
+      Object.values(timeouts).forEach((timeout) => clearTimeout(timeout));
+      Object.values(abortControllers).forEach((controller) => controller.abort());
+    };
+  }, [locations]);
 
   const addLocation = () => {
     const newLocation: CommuteLocation = {
@@ -158,7 +158,7 @@ export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps)
                   onSelect={(suggestion) => handleAddressSelect(location.id, suggestion)}
                   placeholder="Work address"
                   verified={location.verified}
-                  suggestions={getSuggestions(location.address)}
+                  suggestions={suggestionsByLocation[location.id] || []}
                 />
               </div>
               {/* Delete Button - Only show if there's more than one location */}
