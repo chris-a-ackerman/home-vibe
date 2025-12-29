@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { SavedCriteria } from '@/lib/types';
 import SavedCriteriaCard from './SavedCriteriaCard';
 
 export default function SavedCriteriaList() {
+  const router = useRouter();
   const [criteria, setCriteria] = useState<SavedCriteria[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -88,11 +90,17 @@ export default function SavedCriteriaList() {
 
   if (criteria.length === 0) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="font-['Inter'] font-normal text-[14px] text-[#4a5565]">
-          No saved criteria yet. Create your first evaluation criteria to get started!
-        </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+        <div className="card flex items-center justify-center min-h-[200px]">
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="bg-transparent border-0 px-4 py-2 rounded-lg font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[-0.1504px] text-[#0a0a0a] hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+          >
+            + Create new criteria set
+          </button>
+        </div>
       </div>
+      
     );
   }
 
@@ -105,6 +113,16 @@ export default function SavedCriteriaList() {
           onDelete={handleDelete}
         />
       ))}
+      
+      <div className="card flex items-center justify-center min-h-[200px]">
+        <button
+          onClick={() => router.push('/dashboard')}
+          className="bg-transparent border-0 px-4 py-2 rounded-lg font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[-0.1504px] text-[#0a0a0a] hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+        >
+          + Create new criteria set
+        </button>
+      </div>
+      
     </div>
   );
 }
