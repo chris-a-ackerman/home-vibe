@@ -36,18 +36,18 @@ export default function FeatureCard({ data, onValueChange, onHide }: FeatureCard
   };
 
   return (
-    <div className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] p-6 relative w-full max-w-[392px]">
+    <div className="card-compact">
       {/* Header Section */}
       <div className="flex flex-col gap-1 mb-10">
-        <div className="flex items-center gap-2">
-          <span className="text-[20px] leading-[28px]" role="img" aria-label={data.title}>
+        <div className="card-header">
+          <span className="card-icon" role="img" aria-label={data.title}>
             {data.icon}
           </span>
-          <h3 className="font-['Inter'] font-medium text-[18px] leading-[28px] text-neutral-950 tracking-[-0.4395px]">
+          <h3 className="card-title">
             {data.title}
           </h3>
         </div>
-        <p className="font-['Inter'] font-normal text-[14px] leading-[20px] text-[#4a5565] tracking-[-0.1504px]">
+        <p className="card-subtitle">
           {data.subtitle}
         </p>
       </div>
@@ -61,16 +61,7 @@ export default function FeatureCard({ data, onValueChange, onHide }: FeatureCard
             <button
               key={option.value}
               onClick={() => handleOptionClick(option.value)}
-              className={`
-                px-4 py-2 rounded-[8px] font-['Inter'] font-medium
-                text-[14px] leading-[20px] tracking-[-0.1504px]
-                text-center transition-all min-h-[26px]
-                ${
-                  isSelected
-                    ? 'bg-[#030213] text-white border border-[#030213]'
-                    : 'bg-transparent text-[#4a5565] border border-transparent hover:border-[rgba(0,0,0,0.1)]'
-                }
-              `}
+              className={`btn-option ${isSelected ? 'btn-option-selected' : 'btn-option-unselected'}`}
             >
               {option.label}
             </button>
@@ -81,7 +72,7 @@ export default function FeatureCard({ data, onValueChange, onHide }: FeatureCard
       {/* Hide Button */}
       <button
         onClick={handleHideClick}
-        className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-[8px] hover:bg-gray-100 transition-colors"
+        className="absolute top-2 right-2 btn-icon"
         aria-label="Hide card"
       >
         <svg

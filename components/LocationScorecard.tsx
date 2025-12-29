@@ -17,12 +17,13 @@ interface LocationScorecardProps {
 }
 
 const defaultCriteriaScores: CriteriaScore[] = [
-  { name: 'Restaurants', score: 100, icon: '☕' },
-  { name: 'Gym & Fitness', score: 85, icon: '🏋️' },
-  { name: 'Public Transit', score: 92, icon: '🚇' },
-  { name: 'Grocery Stores', score: 88, icon: '🛒' },
-  { name: 'Parks & Recreation', score: 83, icon: '🏞️' },
-  { name: 'Schools', score: 70, icon: '🏫' },
+  { name: 'Restaurants', score: 100, icon: '🍽️' },
+  { name: 'Flood Risk', score: 85, icon: '💧' },
+  { name: 'Parks', score: 92, icon: '🌳' },
+  { name: 'Schools', score: 88, icon: '🎓' },
+  { name: 'Crime', score: 83, icon: '🛡️' },
+  { name: 'Walkability', score: 70, icon: '🚶' },
+  { name: 'Noise', score: 78, icon: '🔇' },
 ];
 
 export default function LocationScorecard({
@@ -53,7 +54,7 @@ export default function LocationScorecard({
 
   return (
     <div
-      className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] p-8 w-full"
+      className="card p-8"
       data-name="LocationScorecard"
     >
       <div className="flex flex-col gap-4 items-center">
@@ -65,20 +66,20 @@ export default function LocationScorecard({
             >
               {score}
             </p>
-            <p className="font-['Inter'] font-normal text-[14px] leading-[20px] text-[#4a5565] tracking-[-0.1504px] mt-4">
+            <p className="card-subtitle mt-4">
               Overall Score
             </p>
           </div>
         </div>
 
         {/* Address */}
-        <p className="font-['Inter'] font-normal text-[24px] leading-[32px] text-neutral-950 tracking-[0.0703px]">
+        <p className="text-heading-lg">
           {address}
         </p>
 
         {/* Narrative */}
         <div className="w-full mt-8">
-          <p className="font-['Inter'] font-normal text-[16px] leading-[26px] text-[#364153] tracking-[-0.3125px]">
+          <p className="text-body">
             {narrative}
           </p>
         </div>
@@ -88,7 +89,7 @@ export default function LocationScorecard({
           {/* Toggle Button */}
           <button
             onClick={() => setShowBreakdown(!showBreakdown)}
-            className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[8px] h-[36px] w-full font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[-0.1504px] text-neutral-950 hover:bg-gray-50 transition-colors relative flex items-center justify-center"
+            className="btn-outline h-[36px] w-full relative flex items-center justify-center"
           >
             <span className="absolute left-[83px] translate-x-[-50%]">See score breakdown</span>
             <svg
@@ -115,11 +116,11 @@ export default function LocationScorecard({
               {filteredCriteriaScores.map((criteria, index) => (
                 <div
                   key={index}
-                  className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[10px] p-4 flex flex-col gap-2"
+                  className="score-breakdown-item"
                 >
                   {/* Criteria Name with Icon */}
                   <div className="flex items-center gap-3">
-                    <span className="text-[20px]">{criteria.icon}</span>
+                    <span className="card-icon">{criteria.icon}</span>
                     <p className="font-['Inter'] font-normal text-[16px] leading-[24px] text-neutral-950 tracking-[-0.3125px]">
                       {criteria.name}
                     </p>
@@ -127,9 +128,9 @@ export default function LocationScorecard({
 
                   {/* Progress Bar and Score */}
                   <div className="flex items-center gap-3">
-                    <div className="flex-1 bg-gray-200 h-[8px] rounded-full overflow-hidden">
+                    <div className="score-bar">
                       <div
-                        className={`h-full ${getBarColor(criteria.score)}`}
+                        className={criteria.score >= 80 ? 'score-bar-fill-green' : 'score-bar-fill-blue'}
                         style={{ width: `${criteria.score}%` }}
                       />
                     </div>

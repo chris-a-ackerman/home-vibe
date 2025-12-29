@@ -133,7 +133,7 @@ export default function SignUpPage() {
                   <div className="grid grid-cols-2 h-full gap-0">
                     <button
                       onClick={() => setActiveTab('signin')}
-                      className={`rounded-[14px] px-[9px] py-[5px] font-medium text-sm leading-5 tracking-[-0.1504px] text-neutral-950 border border-transparent ${
+                      className={`rounded-[14px] px-[9px] font-medium text-sm leading-5 tracking-[-0.1504px] text-neutral-950 border border-transparent ${
                         activeTab === 'signin' ? 'bg-white' : ''
                       }`}
                     >
@@ -141,7 +141,7 @@ export default function SignUpPage() {
                     </button>
                     <button
                       onClick={() => setActiveTab('signup')}
-                      className={`rounded-[14px] px-[9px] py-[5px] font-medium text-sm leading-5 tracking-[-0.1504px] text-neutral-950 border border-transparent ${
+                      className={`rounded-[14px] px-[9px]font-medium text-sm leading-5 tracking-[-0.1504px] text-neutral-950 border border-transparent ${
                         activeTab === 'signup' ? 'bg-white' : ''
                       }`}
                     >

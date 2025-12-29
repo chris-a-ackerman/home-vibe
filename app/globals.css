@@ -3,6 +3,27 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Card styles */
+  --card-border-color: rgba(0, 0, 0, 0.1);
+  --card-border-radius: 14px;
+  --card-padding: 1.5rem;
+
+  /* Button styles */
+  --btn-border-radius: 8px;
+  --btn-primary-bg: #030213;
+  --btn-primary-text: #ffffff;
+  --btn-secondary-text: #4a5565;
+
+  /* Text colors */
+  --text-primary: #030213;
+  --text-secondary: #4a5565;
+  --text-muted: #9CA3AF;
+  --text-placeholder: #717182;
+
+  /* Input styles */
+  --input-bg: #f3f3f5;
+  --input-border-radius: 8px;
 }
 
 @theme inline {
@@ -23,4 +44,389 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Card Styles */
+.card {
+  background-color: white;
+  border: 1px solid var(--card-border-color);
+  border-radius: 14px;
+  padding: 1.5rem;
+  position: relative;
+  width: 100%;
+}
+
+.card-compact {
+  background-color: white;
+  border: 1px solid var(--card-border-color);
+  border-radius: 14px;
+  padding: 1.5rem;
+  position: relative;
+  width: 100%;
+  max-width: 392px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  letter-spacing: -0.44px;
+  color: var(--text-primary);
+}
+
+.card-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.15px;
+  color: var(--text-secondary);
+}
+
+.card-icon {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+/* Button Styles */
+.btn {
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.15px;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.btn-primary {
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.15px;
+  text-align: center;
+  transition: all 0.15s;
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: 1px solid var(--btn-primary-bg);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1a1a2e;
+}
+
+.btn-primary:active:not(:disabled) {
+  background-color: #000000;
+}
+
+.btn-primary:disabled {
+  background-color: #d1d5dc;
+  color: #6a7282;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.15px;
+  text-align: center;
+  transition: all 0.15s;
+  background-color: transparent;
+  border: 1px solid transparent;
+  color: var(--btn-secondary-text);
+}
+
+.btn-secondary:hover {
+  border-color: var(--card-border-color);
+}
+
+.btn-option {
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.15px;
+  text-align: center;
+  transition: all 0.15s;
+  padding: 0.5rem 1rem;
+  min-height: 26px;
+}
+
+.btn-option-selected {
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.15px;
+  text-align: center;
+  transition: all 0.15s;
+  padding: 0.5rem 1rem;
+  min-height: 26px;
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: 1px solid var(--btn-primary-bg);
+}
+
+.btn-option-unselected {
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.15px;
+  text-align: center;
+  transition: all 0.15s;
+  padding: 0.5rem 1rem;
+  min-height: 26px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  color: var(--btn-secondary-text);
+}
+
+.btn-outline {
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.15px;
+  text-align: center;
+  transition: all 0.15s;
+  background-color: white;
+  border: 1px solid var(--card-border-color);
+  color: var(--text-primary);
+}
+
+.btn-outline:hover {
+  background-color: rgb(249 250 251);
+}
+
+.btn-outline:active {
+  background-color: rgb(243 244 246);
+}
+
+.btn-outline:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-icon {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background-color 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-icon:hover {
+  background-color: rgb(243 244 246);
+}
+
+.btn-icon-lg {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background-color 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-icon-lg:hover {
+  background-color: rgb(243 244 246);
+}
+
+/* Commute/Compact Option Buttons */
+.btn-compact-option {
+  height: 2.25rem;
+  padding: 1px 13px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.15px;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.btn-compact-selected {
+  height: 2.25rem;
+  padding: 1px 13px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.15px;
+  text-align: center;
+  transition: all 0.15s;
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: 1px solid var(--btn-primary-bg);
+}
+
+.btn-compact-unselected {
+  height: 2.25rem;
+  padding: 1px 13px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: -0.15px;
+  text-align: center;
+  transition: all 0.15s;
+  background-color: transparent;
+  border: 1px solid transparent;
+  color: var(--btn-secondary-text);
+}
+
+/* Input Styles */
+.input {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 0.875rem;
+  letter-spacing: -0.15px;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--text-placeholder);
+}
+
+.input-bordered {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 0.875rem;
+  letter-spacing: -0.15px;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  transition: border-color 0.15s;
+}
+
+.input-bordered:focus {
+  outline: none;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.input-sm {
+  height: 2.25rem;
+}
+
+/* Label Styles */
+.label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--text-secondary);
+}
+
+/* Text Styles */
+.text-body {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 26px;
+  letter-spacing: -0.31px;
+  color: #364153;
+}
+
+.text-heading-lg {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  letter-spacing: 0.07px;
+  color: var(--text-primary);
+}
+
+.text-heading-md {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  letter-spacing: -0.45px;
+  color: var(--text-primary);
+}
+
+.text-heading-xl {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 2.25rem;
+  letter-spacing: 0.4px;
+  color: var(--text-primary);
+}
+
+/* Score/Breakdown Styles */
+.score-breakdown-item {
+  background-color: white;
+  border: 1px solid var(--card-border-color);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.score-bar {
+  flex: 1;
+  background-color: rgb(229 231 235);
+  height: 0.5rem;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.score-bar-fill-green {
+  height: 100%;
+  background-color: #00a63e;
+}
+
+.score-bar-fill-blue {
+  height: 100%;
+  background-color: #155dfc;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .card-compact {
+    @apply max-w-full;
+  }
+
+  :root {
+    --card-padding: 1rem;
+  }
 }

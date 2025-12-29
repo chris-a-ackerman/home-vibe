@@ -101,12 +101,12 @@ export default function AddressEvaluationForm({ onEvaluate, disabled = false, di
 
   return (
     <div
-      className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] pl-[33px] pr-px py-[33px] w-full flex flex-col gap-12"
+      className="card pl-[33px] pr-px py-[33px] flex flex-col gap-12"
       data-name="AddressEvaluationForm"
     >
       {/* Heading */}
       <div className="h-9">
-        <h2 className="font-['Inter'] font-normal text-[30px] leading-[36px] text-neutral-950 tracking-[0.3955px]">
+        <h2 className="text-heading-xl">
           Where are you considering?
         </h2>
       </div>
@@ -130,13 +130,7 @@ export default function AddressEvaluationForm({ onEvaluate, disabled = false, di
           <button
             onClick={handleEvaluate}
             disabled={isEvaluating || !isVerified || disabled}
-            className={`
-              rounded-[8px] h-[40px] w-full font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[-0.1504px] text-center transition-colors
-              ${isVerified && !disabled && !isEvaluating
-                ? 'bg-[#030213] text-white hover:bg-[#1a1a2e] active:bg-[#000000]'
-                : 'bg-[#d1d5dc] text-[#6a7282] cursor-not-allowed'
-              }
-            `}
+            className="btn-primary h-[40px] w-full"
           >
             {isEvaluating ? 'Evaluating...' : 'Evaluate Location'}
           </button>
