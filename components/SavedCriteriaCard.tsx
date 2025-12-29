@@ -57,19 +57,19 @@ export default function SavedCriteriaCard({ criteria, onDelete }: SavedCriteriaC
 
   return (
     <div
-      className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] p-6 relative w-full"
+      className="card"
       data-name="SavedCriteriaCard"
     >
       {/* Header Section */}
       <div className="flex items-start justify-between mb-8">
-        <h3 className="font-['Inter'] font-normal text-[20px] leading-[28px] text-neutral-950 tracking-[-0.4492px]">
+        <h3 className="text-heading-md">
           {criteria.name}
         </h3>
 
         {/* Delete Button */}
         <button
           onClick={handleDelete}
-          className="flex items-center justify-center rounded-[8px] w-8 h-8 hover:bg-gray-100 transition-colors shrink-0"
+          className="btn-icon"
           aria-label="Delete criteria"
         >
           <TrashIcon />
@@ -78,7 +78,7 @@ export default function SavedCriteriaCard({ criteria, onDelete }: SavedCriteriaC
 
       {/* Addresses Evaluated */}
       <div className="mb-8">
-        <p className="font-['Inter'] font-normal text-[14px] leading-[20px] text-[#4a5565] tracking-[-0.1504px]">
+        <p className="card-subtitle">
           {addressesEvaluated} address{addressesEvaluated !== 1 ? 'es' : ''} evaluated
         </p>
       </div>
@@ -88,7 +88,7 @@ export default function SavedCriteriaCard({ criteria, onDelete }: SavedCriteriaC
         {displayItems.map((item, index) => (
           <p
             key={index}
-            className="font-['Inter'] font-normal text-[14px] leading-[20px] text-neutral-950 tracking-[-0.1504px]"
+            className="card-subtitle text-neutral-950"
           >
             {item}
           </p>

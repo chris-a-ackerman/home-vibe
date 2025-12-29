@@ -134,13 +134,13 @@ export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps)
   };
 
   return (
-    <div className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] p-6 relative w-full max-w-[392px]">
+    <div className="card-compact">
       {/* Header Section */}
-      <div className="flex items-center gap-2 mb-10">
-        <span className="text-[20px] leading-[28px]" role="img" aria-label="Commute">
+      <div className="card-header mb-10">
+        <span className="card-icon" role="img" aria-label="Commute">
           🚗
         </span>
-        <h3 className="font-['Inter'] font-medium text-[18px] leading-[28px] text-neutral-950 tracking-[-0.4395px]">
+        <h3 className="card-title">
           Commute
         </h3>
       </div>
@@ -165,7 +165,7 @@ export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps)
               {locations.length > 1 && (
                 <button
                   onClick={() => deleteLocation(location.id)}
-                  className="w-[36px] h-[36px] flex items-center justify-center rounded-[8px] hover:bg-gray-100 transition-colors shrink-0 mt-[7px]"
+                  className="btn-icon-lg mt-[7px]"
                   aria-label="Delete location"
                 >
                   <svg
@@ -189,25 +189,17 @@ export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps)
 
             {/* Max Commute (minutes) */}
             <div className="flex flex-col gap-1">
-              <label className="font-['Inter'] font-medium text-[12px] leading-[16px] text-[#4a5565]">
+              <label className="label">
                 Max commute (minutes)
               </label>
-              <div className="flex gap-[7.96px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] rounded-[8px]">
+              <div className="flex flex-wrap gap-[7.96px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] rounded-[8px]">
                 {commuteTimeOptions.map((time) => {
                   const isSelected = location.maxCommute === time;
                   return (
                     <button
                       key={time}
                       onClick={() => updateLocation(location.id, 'maxCommute', time)}
-                      className={`
-                        h-[36px] px-[13px] py-px rounded-[8px] font-['Inter'] font-medium
-                        text-[14px] leading-[20px] tracking-[-0.1504px] text-center transition-all
-                        ${
-                          isSelected
-                            ? 'bg-[#030213] text-white border border-[#030213]'
-                            : 'bg-transparent text-[#4a5565] border border-transparent'
-                        }
-                      `}
+                      className={isSelected ? 'btn-compact-selected' : 'btn-compact-unselected'}
                     >
                       {time}
                     </button>
@@ -218,25 +210,17 @@ export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps)
 
             {/* Preferred Commute Type */}
             <div className="flex flex-col gap-1">
-              <label className="font-['Inter'] font-medium text-[12px] leading-[16px] text-[#4a5565]">
+              <label className="label">
                 Preferred commute type
               </label>
-              <div className="flex gap-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] rounded-[8px]">
+              <div className="flex flex-wrap gap-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] rounded-[8px]">
                 {commuteTypeOptions.map((type) => {
                   const isSelected = location.commuteType === type;
                   return (
                     <button
                       key={type}
                       onClick={() => updateLocation(location.id, 'commuteType', type)}
-                      className={`
-                        h-[36px] px-[13px] py-px rounded-[8px] font-['Inter'] font-medium
-                        text-[14px] leading-[20px] tracking-[-0.1504px] text-center transition-all
-                        ${
-                          isSelected
-                            ? 'bg-[#030213] text-white border border-[#030213]'
-                            : 'bg-transparent text-[#4a5565] border border-transparent'
-                        }
-                      `}
+                      className={isSelected ? 'btn-compact-selected' : 'btn-compact-unselected'}
                     >
                       {type}
                     </button>
@@ -250,7 +234,7 @@ export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps)
         {/* Add Another Button */}
         <button
           onClick={addLocation}
-          className="bg-white border border-[rgba(0,0,0,0.1)] rounded-[8px] h-[32px] w-full font-['Inter'] font-medium text-[14px] leading-[20px] tracking-[-0.1504px] text-neutral-950 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+          className="btn-outline h-[32px] w-full flex items-center justify-center gap-2"
         >
           <svg
             width="16"
@@ -274,7 +258,7 @@ export default function CommuteCard({ onValueChange, onHide }: CommuteCardProps)
       {/* Hide Button */}
       <button
         onClick={handleHideClick}
-        className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-[8px] hover:bg-gray-100 transition-colors"
+        className="absolute top-2 right-2 btn-icon"
         aria-label="Hide card"
       >
         <svg
