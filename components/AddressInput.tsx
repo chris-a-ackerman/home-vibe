@@ -18,6 +18,8 @@ interface AddressInputProps {
   disabled?: boolean;
   verified?: boolean;
   suggestions?: AddressSuggestion[];
+  className?: string;
+  containerClassName?: string;
 }
 
 export default function AddressInput({
@@ -28,7 +30,9 @@ export default function AddressInput({
   placeholder = "Enter address",
   disabled = false,
   verified = false,
-  suggestions = []
+  suggestions = [],
+  className = '',
+  containerClassName = ''
 }: AddressInputProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -61,9 +65,9 @@ export default function AddressInput({
   };
 
   return (
-    <div className="flex flex-col gap-1 w-full relative">
+    <div className={containerClassName || "flex flex-col gap-1 w-full relative"}>
       {/* Input Container */}
-      <div className="relative h-[50px] w-full">
+      <div className={containerClassName ? "relative w-full" : "relative h-[50px] w-full"}>
         <input
           ref={inputRef}
           type="text"
@@ -73,7 +77,7 @@ export default function AddressInput({
           onFocus={() => setShowDropdown(value.length > 0 && suggestions.length > 0)}
           placeholder={placeholder}
           disabled={disabled}
-          className={`
+          className={className || `
             w-full h-[50px] px-3 pr-12 rounded-lg
             font-['Inter'] font-normal text-[14px] tracking-[-0.1504px]
             transition-all
@@ -113,7 +117,7 @@ export default function AddressInput({
       {showDropdown && suggestions.length > 0 && (
         <div
           ref={dropdownRef}
-          className="absolute top-[50px] left-0 right-0 z-10 bg-white border border-gray-200 rounded-[10px] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] overflow-hidden"
+          className={`absolute ${containerClassName ? 'top-[38px]' : 'top-[50px]'} left-0 right-0 z-10 bg-white border border-gray-200 rounded-[10px] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-4px_rgba(0,0,0,0.1)] overflow-hidden`}
         >
           {suggestions.map((suggestion, index) => (
             <button
@@ -162,7 +166,7 @@ export default function AddressInput({
 
       {/* Verification Message */}
       {verified && (
-        <div className="flex items-center gap-1 h-4">
+        <div className={containerClassName ? "absolute top-full left-0 mt-1 flex items-center gap-1 h-4" : "h-4 flex items-center gap-1"}>
           <svg
             width="12"
             height="12"
@@ -182,6 +186,10 @@ export default function AddressInput({
             Address verified
           </p>
         </div>
+      )}
+      {/* Reserve space for verification message when using default container */}
+      {!containerClassName && !verified && (
+        <div className="h-4"></div>
       )}
     </div>
   );

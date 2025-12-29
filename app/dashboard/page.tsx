@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import Header from '@/components/Header';
 import PillNavigation from '@/components/PillNavigation';
 import FeatureCard, { FeatureCardData } from '@/components/FeatureCard';
@@ -8,6 +8,7 @@ import CommuteCard from '@/components/CommuteCard';
 import HiddenCardsNotification from '@/components/HiddenCardsNotification';
 import AddressEvaluationForm from '@/components/AddressEvaluationForm';
 import LocationScorecard from '@/components/LocationScorecard';
+import QuickEvaluation from '@/components/QuickEvaluation';
 import { featureCards } from '@/lib/featureCardData';
 import { supabase } from '@/lib/supabase';
 
@@ -31,6 +32,8 @@ export default function DashboardPage() {
   const [savedCriteriaId, setSavedCriteriaId] = useState<string | null>(null);
   const [isSavingCriteria, setIsSavingCriteria] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [hasSavedCriteria, setHasSavedCriteria] = useState(false);
+  const [savedCriteriaList, setSavedCriteriaList] = useState<Array<{ id: string; name: string }>>([]);
   const scorecardRef = useRef<HTMLDivElement>(null);
 
   // Initialize criteriaValues with default values from featureCards
@@ -42,6 +45,38 @@ export default function DashboardPage() {
   }, []);
 
   const [criteriaValues, setCriteriaValues] = useState<Record<string, string>>(initialCriteriaValues);
+
+  // Check for saved criteria on mount
+  useEffect(() => {
+    const checkForSavedCriteria = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+          setHasSavedCriteria(false);
+          setSavedCriteriaList([]);
+          return;
+        }
+
+        const { data, error: fetchError } = await supabase
+          .from('evaluation_criteria')
+          .select('id, name')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (fetchError) throw fetchError;
+
+        setHasSavedCriteria(data && data.length > 0);
+        setSavedCriteriaList(data || []);
+      } catch (err) {
+        console.error('Error checking for saved criteria:', err);
+        setHasSavedCriteria(false);
+        setSavedCriteriaList([]);
+      }
+    };
+
+    checkForSavedCriteria();
+  }, []);
 
   const handleHideCard = (card: FeatureCardData) => {
     setHiddenCards((prev) => [...prev, card]);
@@ -96,6 +131,8 @@ export default function DashboardPage() {
 
       setSaveMessage({ type: 'success', text: 'Evaluation criteria saved successfully!' });
       setSavedCriteriaId(savedCriteria.id);
+      setHasSavedCriteria(true);
+      setSavedCriteriaList((prev) => [{ id: savedCriteria.id, name: savedCriteria.name }, ...prev]);
 
       setTimeout(() => setSaveMessage(null), 3000);
     } catch (error) {
@@ -184,6 +221,11 @@ export default function DashboardPage() {
           console.log('Criteria updated:', updatedCriteria);
           criteriaId = updatedCriteria.id;
           setSavedCriteriaId(updatedCriteria.id);
+          setHasSavedCriteria(true);
+          // Update the criteria in the list
+          setSavedCriteriaList((prev) =>
+            prev.map((item) => (item.id === updatedCriteria.id ? { id: updatedCriteria.id, name: updatedCriteria.name } : item))
+          );
         } else {
           // Create new criteria
           const { data: newCriteria, error: saveError } = await supabase
@@ -204,6 +246,9 @@ export default function DashboardPage() {
           console.log('Criteria saved:', newCriteria);
           criteriaId = newCriteria.id;
           setSavedCriteriaId(newCriteria.id);
+          setHasSavedCriteria(true);
+          // Add new criteria to the list
+          setSavedCriteriaList((prev) => [{ id: newCriteria.id, name: newCriteria.name }, ...prev]);
         }
       }
 
@@ -277,6 +322,14 @@ export default function DashboardPage() {
 
       <main className="px-[91px] py-8">
         <PillNavigation />
+
+        {/* Quick Evaluation - only shows if user has saved criteria */}
+        <div className="mt-8">
+          <QuickEvaluation
+            hasSavedCriteria={hasSavedCriteria}
+            savedCriteriaList={savedCriteriaList}
+          />
+        </div>
 
         <div className="mt-8">
           <h2 className="text-2xl font-semibold text-neutral-950 mb-4">New Evaluation</h2>
